@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0a0f">
+<title>30 Day Shred</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --bg3: #1a1a28;
+  --card: #15151f;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text2: #8888a0;
+  --accent: #00e676;
+  --accent2: #00c853;
+  --accent-glow: rgba(0,230,118,0.15);
+  --red: #ff5252;
+  --blue: #448aff;
+  --orange: #ffab40;
+  --purple: #b388ff;
+  --radius: 16px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+/* Screens */
+.screen { display:none; padding:20px 16px 100px; max-width:480px; margin:0 auto; }
+.screen.active { display:block; }
+
+/* Setup Screen */
+.setup-screen {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:100vh; padding:40px 24px; text-align:center;
+}
+.setup-logo {
+  font-family:'Space Mono',monospace; font-size:48px; font-weight:700;
+  background:linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.setup-subtitle { color:var(--text2); font-size:14px; margin-bottom:40px; letter-spacing:2px; text-transform:uppercase; }
+.setup-form { width:100%; max-width:320px; }
+.setup-field { margin-bottom:20px; text-align:left; }
+.setup-field label { display:block; font-size:12px; color:var(--text2); margin-bottom:6px; text-transform:uppercase; letter-spacing:1px; }
+.setup-field input, .setup-field select {
+  width:100%; padding:14px 16px; background:var(--bg3); border:1px solid var(--border);
+  border-radius:12px; color:var(--text); font-size:16px; font-family:'Outfit',sans-serif;
+  outline:none; transition:border 0.2s;
+}
+.setup-field input:focus, .setup-field select:focus { border-color:var(--accent); }
+.setup-field select option { background:var(--bg3); }
+.time-row { display:flex; gap:12px; }
+.time-row .setup-field { flex:1; }
+.btn-primary {
+  width:100%; padding:16px; background:var(--accent); color:#0a0a0f;
+  border:none; border-radius:12px; font-size:16px; font-weight:700;
+  font-family:'Outfit',sans-serif; cursor:pointer; margin-top:12px;
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.btn-primary:active { transform:scale(0.97); }
+.btn-primary:hover { box-shadow:0 0 30px var(--accent-glow); }
+
+/* Header */
+.header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 0 20px; position:sticky; top:0; z-index:10;
+  background:linear-gradient(to bottom, var(--bg) 60%, transparent);
+}
+.header-title { font-family:'Space Mono',monospace; font-size:20px; font-weight:700; }
+.header-day {
+  font-size:12px; color:var(--accent); background:var(--accent-glow);
+  padding:4px 12px; border-radius:20px; font-weight:600;
+}
+
+/* Day Counter Ring */
+.day-ring-wrap { display:flex; justify-content:center; margin:8px 0 24px; }
+.day-ring {
+  width:140px; height:140px; position:relative; display:flex;
+  align-items:center; justify-content:center; flex-direction:column;
+}
+.day-ring svg { position:absolute; top:0; left:0; transform:rotate(-90deg); }
+.day-ring .day-num { font-size:42px; font-weight:900; line-height:1; }
+.day-ring .day-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:2px; margin-top:2px; }
+
+/* Cards */
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; margin-bottom:14px; transition:border 0.2s;
+}
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.card-title { font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+.card-icon { font-size:20px; }
+
+/* Weight Input */
+.weight-input-wrap { display:flex; align-items:center; gap:12px; }
+.weight-input {
+  flex:1; padding:12px; background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; color:var(--text); font-size:24px; font-weight:700;
+  font-family:'Outfit',sans-serif; text-align:center; outline:none;
+}
+.weight-input:focus { border-color:var(--accent); }
+.weight-unit { color:var(--text2); font-size:14px; }
+.btn-save {
+  padding:12px 20px; background:var(--accent); color:#0a0a0f; border:none;
+  border-radius:10px; font-weight:700; font-size:14px; cursor:pointer;
+  font-family:'Outfit',sans-serif;
+}
+
+/* Water Tracker */
+.water-bar-wrap { margin:8px 0; }
+.water-bar-bg {
+  width:100%; height:28px; background:var(--bg); border-radius:14px;
+  overflow:hidden; position:relative;
+}
+.water-bar-fill {
+  height:100%; background:linear-gradient(90deg, var(--blue), #40c4ff);
+  border-radius:14px; transition:width 0.4s ease; min-width:0;
+}
+.water-bar-text {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-size:12px; font-weight:700; color:white; text-shadow:0 1px 3px rgba(0,0,0,0.5);
+}
+.water-btns { display:flex; gap:8px; margin-top:10px; }
+.water-btn {
+  flex:1; padding:10px; background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; color:var(--text); font-size:13px; font-weight:600;
+  cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.15s;
+}
+.water-btn:active { background:var(--blue); color:white; border-color:var(--blue); }
+.water-btn.undo { flex:0.5; color:var(--red); }
+
+/* Fasting Tracker */
+.fast-status {
+  display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg);
+  border-radius:12px;
+}
+.fast-dot { width:12px; height:12px; border-radius:50%; background:var(--red); flex-shrink:0; }
+.fast-dot.active { background:var(--accent); animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+.fast-info { flex:1; }
+.fast-timer { font-size:24px; font-weight:700; font-family:'Space Mono',monospace; }
+.fast-label { font-size:11px; color:var(--text2); text-transform:uppercase; }
+.btn-fast {
+  padding:10px 18px; border:1px solid var(--border); background:var(--bg3);
+  border-radius:10px; color:var(--text); font-weight:600; font-size:13px;
+  cursor:pointer; font-family:'Outfit',sans-serif;
+}
+.btn-fast.stop { border-color:var(--red); color:var(--red); }
+
+/* Workout Sessions */
+.session-item {
+  display:flex; align-items:center; gap:14px; padding:14px;
+  background:var(--bg); border-radius:12px; margin-bottom:8px; cursor:pointer;
+  border:1px solid transparent; transition:all 0.2s;
+}
+.session-item:active { border-color:var(--accent); }
+.session-item.done { opacity:0.6; }
+.session-item.done .session-check { background:var(--accent); border-color:var(--accent); }
+.session-item.done .session-check::after { content:'✓'; color:#0a0a0f; font-size:14px; font-weight:700; }
+.session-check {
+  width:28px; height:28px; border-radius:8px; border:2px solid var(--border);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.session-info { flex:1; }
+.session-name { font-size:14px; font-weight:600; }
+.session-time { font-size:11px; color:var(--text2); margin-top:2px; }
+.session-expand-btn {
+  padding:6px 12px; border:1px solid var(--border); border-radius:8px;
+  background:transparent; color:var(--text2); font-size:11px; cursor:pointer;
+  font-family:'Outfit',sans-serif;
+}
+
+/* Session Detail Modal */
+.modal-overlay {
+  display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8);
+  z-index:100; align-items:flex-end; justify-content:center;
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:var(--bg2); border-radius:24px 24px 0 0; width:100%; max-width:480px;
+  max-height:85vh; overflow-y:auto; padding:24px 20px 40px;
+  animation:slideUp 0.3s ease;
+}
+@keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+.modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+.modal-title { font-size:20px; font-weight:700; margin-bottom:4px; }
+.modal-subtitle { font-size:13px; color:var(--text2); margin-bottom:20px; }
+.exercise-item {
+  padding:14px; background:var(--bg); border-radius:12px; margin-bottom:8px;
+}
+.exercise-name { font-size:14px; font-weight:600; margin-bottom:4px; }
+.exercise-detail { font-size:12px; color:var(--text2); line-height:1.5; }
+.exercise-note { font-size:11px; color:var(--accent); margin-top:4px; font-style:italic; }
+.btn-complete-session {
+  width:100%; padding:16px; background:var(--accent); color:#0a0a0f;
+  border:none; border-radius:12px; font-size:16px; font-weight:700;
+  font-family:'Outfit',sans-serif; cursor:pointer; margin-top:16px;
+}
+
+/* Steps */
+.steps-input-wrap { display:flex; align-items:center; gap:12px; }
+.steps-input {
+  flex:1; padding:12px; background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; color:var(--text); font-size:20px; font-weight:700;
+  font-family:'Outfit',sans-serif; text-align:center; outline:none;
+}
+.steps-goal { text-align:center; font-size:12px; color:var(--text2); margin-top:6px; }
+
+/* Nav */
+.nav {
+  position:fixed; bottom:0; left:0; right:0; background:var(--bg2);
+  border-top:1px solid var(--border); display:flex; z-index:50;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  padding:10px 0; cursor:pointer; color:var(--text2); transition:color 0.2s;
+  border:none; background:none; font-family:'Outfit',sans-serif; font-size:10px;
+}
+.nav-item.active { color:var(--accent); }
+.nav-icon { font-size:22px; margin-bottom:2px; }
+
+/* Progress Screen */
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+.stat-card {
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; text-align:center;
+}
+.stat-value { font-size:28px; font-weight:800; }
+.stat-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:1px; margin-top:4px; }
+.stat-value.green { color:var(--accent); }
+.stat-value.blue { color:var(--blue); }
+.stat-value.orange { color:var(--orange); }
+.stat-value.purple { color:var(--purple); }
+
+/* Chart */
+.chart-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:14px; }
+.chart-title { font-size:14px; font-weight:600; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; }
+canvas { width:100%!important; height:200px!important; }
+
+/* Plan Screen */
+.plan-phase { margin-bottom:20px; }
+.phase-title { font-size:16px; font-weight:700; margin-bottom:4px; }
+.phase-days { font-size:12px; color:var(--accent); margin-bottom:12px; }
+.plan-exercise {
+  padding:12px; background:var(--bg); border-radius:10px; margin-bottom:6px;
+  font-size:13px;
+}
+.plan-exercise strong { color:var(--accent); }
+
+/* Settings Screen */
+.setting-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px; background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); margin-bottom:10px;
+}
+.setting-label { font-size:14px; }
+.setting-value { font-size:14px; color:var(--text2); }
+.btn-danger {
+  width:100%; padding:14px; background:transparent; border:1px solid var(--red);
+  color:var(--red); border-radius:12px; font-size:14px; font-weight:600;
+  cursor:pointer; margin-top:20px; font-family:'Outfit',sans-serif;
+}
+.btn-secondary {
+  width:100%; padding:14px; background:var(--bg3); border:1px solid var(--border);
+  color:var(--text); border-radius:12px; font-size:14px; font-weight:600;
+  cursor:pointer; margin-top:10px; font-family:'Outfit',sans-serif;
+}
+
+/* Notification banner */
+.notif-banner {
+  position:fixed; top:0; left:0; right:0; padding:16px 20px;
+  background:var(--accent); color:#0a0a0f; font-weight:600; font-size:14px;
+  text-align:center; transform:translateY(-100%); transition:transform 0.3s ease;
+  z-index:200; box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  backdrop-filter:blur(10px);
+}
+.notif-banner.show { transform:translateY(0); }
+
+/* History log */
+.history-item {
+  padding:12px; background:var(--bg); border-radius:10px; margin-bottom:6px;
+  display:flex; justify-content:space-between; font-size:13px;
+}
+.history-date { color:var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- Notification Banner -->
+<div class="notif-banner" id="notifBanner"></div>
+
+<!-- SETUP SCREEN -->
+<div class="screen setup-screen active" id="setupScreen">
+  <div class="setup-logo">30</div>
+  <div class="setup-subtitle">Day Transformation</div>
+  <div class="setup-form">
+    <div class="setup-field">
+      <label>Starting Weight (kg)</label>
+      <input type="number" id="setupWeight" value="92.5" step="0.1">
+    </div>
+    <div class="setup-field">
+      <label>Start Date</label>
+      <input type="date" id="setupDate">
+    </div>
+    <div class="time-row">
+      <div class="setup-field">
+        <label>Wake Time</label>
+        <input type="time" id="setupWake" value="07:00">
+      </div>
+      <div class="setup-field">
+        <label>Sleep Time</label>
+        <input type="time" id="setupSleep" value="23:00">
+      </div>
+    </div>
+    <div class="setup-field">
+      <label>Eating Window Start (16:8)</label>
+      <input type="time" id="setupEatStart" value="12:00">
+    </div>
+    <button class="btn-primary" onclick="startJourney()">Start My 30 Days</button>
+  </div>
+</div>
+
+<!-- MAIN SCREENS -->
+<!-- Today -->
+<div class="screen" id="todayScreen">
+  <div class="header">
+    <div class="header-title">Today</div>
+    <div class="header-day" id="headerDay">Day 1/30</div>
+  </div>
+
+  <div class="day-ring-wrap">
+    <div class="day-ring">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <circle cx="70" cy="70" r="62" fill="none" stroke="var(--bg3)" stroke-width="8"/>
+        <circle id="dayRingCircle" cx="70" cy="70" r="62" fill="none" stroke="var(--accent)" stroke-width="8"
+          stroke-dasharray="389.56" stroke-dashoffset="389.56" stroke-linecap="round"/>
+      </svg>
+      <div class="day-num" id="dayNum">1</div>
+      <div class="day-label">of 30</div>
+    </div>
+  </div>
+
+  <!-- Weight -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚖️ Weight</div>
+    </div>
+    <div class="weight-input-wrap">
+      <input type="number" class="weight-input" id="weightInput" step="0.1" placeholder="0.0">
+      <span class="weight-unit">kg</span>
+      <button class="btn-save" onclick="saveWeight()">Log</button>
+    </div>
+  </div>
+
+  <!-- Fasting -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🕐 Fasting (16:8)</div>
+    </div>
+    <div class="fast-status">
+      <div class="fast-dot" id="fastDot"></div>
+      <div class="fast-info">
+        <div class="fast-timer" id="fastTimer">00:00:00</div>
+        <div class="fast-label" id="fastLabel">Not fasting</div>
+      </div>
+      <button class="btn-fast" id="fastBtn" onclick="toggleFast()">Start</button>
+    </div>
+  </div>
+
+  <!-- Water -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💧 Water</div>
+      <span id="waterAmount" style="font-size:14px;font-weight:700;color:var(--blue)">0 / 2.5L</span>
+    </div>
+    <div class="water-bar-wrap">
+      <div class="water-bar-bg">
+        <div class="water-bar-fill" id="waterFill" style="width:0%"></div>
+        <div class="water-bar-text" id="waterPercent">0%</div>
+      </div>
+    </div>
+    <div class="water-btns">
+      <button class="water-btn" onclick="addWater(0.25)">+250ml</button>
+      <button class="water-btn" onclick="addWater(0.33)">+330ml</button>
+      <button class="water-btn" onclick="addWater(0.5)">+500ml</button>
+      <button class="water-btn undo" onclick="addWater(-0.25)">Undo</button>
+    </div>
+  </div>
+
+  <!-- Steps -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🚶 Steps</div>
+    </div>
+    <div class="steps-input-wrap">
+      <input type="number" class="steps-input" id="stepsInput" placeholder="0">
+      <button class="btn-save" onclick="saveSteps()">Log</button>
+    </div>
+    <div class="steps-goal">Goal: 10,000 steps</div>
+  </div>
+
+  <!-- Workout Sessions -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💪 Sessions</div>
+      <span id="sessionCount" style="font-size:13px;color:var(--text2)">0/4</span>
+    </div>
+    <div id="sessionList"></div>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="screen" id="progressScreen">
+  <div class="header">
+    <div class="header-title">Progress</div>
+    <div class="header-day" id="headerDay2">Day 1/30</div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-value green" id="statLost">0</div>
+      <div class="stat-label">kg lost</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value blue" id="statStreak">0</div>
+      <div class="stat-label">day streak</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value orange" id="statSessions">0</div>
+      <div class="stat-label">sessions done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value purple" id="statWater">0</div>
+      <div class="stat-label">L water total</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Weight Trend</div>
+    <canvas id="weightChart"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Daily Completion</div>
+    <canvas id="completionChart"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">History</div>
+    <div id="historyLog"></div>
+  </div>
+</div>
+
+<!-- Plan -->
+<div class="screen" id="planScreen">
+  <div class="header">
+    <div class="header-title">The Plan</div>
+  </div>
+
+  <div class="card" style="border-color:var(--accent);margin-bottom:20px;">
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px;color:var(--accent);">YOUR PROGRAM</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6;">
+      4× daily 10-min calisthenics sessions + 10k steps + 16:8 fasting.<br>
+      Progressive overload every 10 days. No equipment needed. 2×2m space.
+    </div>
+  </div>
+
+  <div class="plan-phase">
+    <div class="phase-title">Phase 1: Foundation</div>
+    <div class="phase-days">Days 1–10</div>
+    <div id="phase1Exercises"></div>
+  </div>
+  <div class="plan-phase">
+    <div class="phase-title">Phase 2: Build</div>
+    <div class="phase-days">Days 11–20</div>
+    <div id="phase2Exercises"></div>
+  </div>
+  <div class="plan-phase">
+    <div class="phase-title">Phase 3: Peak</div>
+    <div class="phase-days">Days 21–30</div>
+    <div id="phase3Exercises"></div>
+  </div>
+</div>
+
+<!-- Settings -->
+<div class="screen" id="settingsScreen">
+  <div class="header">
+    <div class="header-title">Settings</div>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Wake Time</span>
+    <span class="setting-value" id="setWake">07:00</span>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Sleep Time</span>
+    <span class="setting-value" id="setSleep">23:00</span>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Eating Window</span>
+    <span class="setting-value" id="setEat">12:00 – 20:00</span>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Start Date</span>
+    <span class="setting-value" id="setStart">-</span>
+  </div>
+  <div class="setting-item">
+    <span class="setting-label">Starting Weight</span>
+    <span class="setting-value" id="setStartWeight">92.5 kg</span>
+  </div>
+  <div class="setting-item" style="cursor:pointer" onclick="requestNotifPermission()">
+    <span class="setting-label">🔔 Enable Notifications</span>
+    <span class="setting-value" id="setNotif">Tap to enable</span>
+  </div>
+  <button class="btn-secondary" onclick="exportData()">Export Data (JSON)</button>
+  <button class="btn-danger" onclick="resetAll()">Reset All Data</button>
+
+  <div style="margin-top:24px;">
+    <div class="card-title" style="margin-bottom:12px;">🔔 Notification Log</div>
+    <div id="notifLogList"></div>
+  </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button class="nav-item active" onclick="showScreen('todayScreen',this)">
+    <div class="nav-icon">📋</div>Today
+  </button>
+  <button class="nav-item" onclick="showScreen('progressScreen',this)">
+    <div class="nav-icon">📈</div>Progress
+  </button>
+  <button class="nav-item" onclick="showScreen('planScreen',this)">
+    <div class="nav-icon">🏋️</div>Plan
+  </button>
+  <button class="nav-item" onclick="showScreen('settingsScreen',this)">
+    <div class="nav-icon">⚙️</div>Settings
+  </button>
+</div>
+
+<!-- Session Detail Modal -->
+<div class="modal-overlay" id="sessionModal" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">Session</div>
+    <div class="modal-subtitle" id="modalSubtitle">10 minutes</div>
+    <div id="modalExercises"></div>
+    <button class="btn-complete-session" id="modalCompleteBtn" onclick="completeSession()">Mark Complete ✓</button>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+const WORKOUT_PLAN = {
+  sessions: [
+    {
+      name: "Morning — Lower Body",
+      icon: "🦵",
+      phases: [
+        {
+          exercises: [
+            { name:"Bodyweight Squats", reps:"15 reps × 3 sets", rest:"30s rest", note:"Go deep, keep chest up" },
+            { name:"Reverse Lunges (alternating)", reps:"10 each leg × 2 sets", rest:"30s rest", note:"Touch knee gently to floor" },
+            { name:"Calf Raises", reps:"20 reps × 2 sets", rest:"20s rest", note:"Pause at the top" },
+            { name:"Wall Sit", reps:"30 seconds × 2", rest:"20s rest", note:"Thighs parallel to ground" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Squats", reps:"20 reps × 3 sets", rest:"30s rest", note:"Slow down phase (3 sec)" },
+            { name:"Bulgarian Split Squats", reps:"10 each × 2 sets", rest:"30s rest", note:"Back foot on chair/bed" },
+            { name:"Single Leg Calf Raises", reps:"15 each × 2 sets", rest:"20s rest", note:"Hold wall for balance" },
+            { name:"Wall Sit", reps:"45 seconds × 2", rest:"20s rest", note:"Add arm raises" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Jump Squats", reps:"12 reps × 3 sets", rest:"30s rest", note:"Land softly" },
+            { name:"Bulgarian Split Squats", reps:"12 each × 3 sets", rest:"30s rest", note:"Slow negatives" },
+            { name:"Single Leg Calf Raises", reps:"20 each × 2 sets", rest:"15s rest", note:"" },
+            { name:"Wall Sit", reps:"60 seconds × 2", rest:"15s rest", note:"Don't quit early" },
+          ]
+        }
+      ]
+    },
+    {
+      name: "Late Morning — Push",
+      icon: "💪",
+      phases: [
+        {
+          exercises: [
+            { name:"Push-ups", reps:"10 reps × 3 sets", rest:"30s rest", note:"Full range of motion" },
+            { name:"Incline Push-ups (hands on chair)", reps:"12 reps × 2 sets", rest:"30s rest", note:"Good for building up" },
+            { name:"Pike Push-ups", reps:"8 reps × 2 sets", rest:"30s rest", note:"Hips high, targets shoulders" },
+            { name:"Diamond Push-ups", reps:"6-8 reps × 2 sets", rest:"30s rest", note:"Hands close together" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Push-ups", reps:"15 reps × 3 sets", rest:"25s rest", note:"Slow negatives (3 sec down)" },
+            { name:"Wide Push-ups", reps:"12 reps × 2 sets", rest:"25s rest", note:"Hands wider than shoulders" },
+            { name:"Pike Push-ups", reps:"10 reps × 3 sets", rest:"25s rest", note:"Feet elevated if possible" },
+            { name:"Diamond Push-ups", reps:"10 reps × 2 sets", rest:"25s rest", note:"Focus on triceps squeeze" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Push-ups", reps:"20 reps × 3 sets", rest:"20s rest", note:"Explosive up, slow down" },
+            { name:"Archer Push-ups", reps:"6 each side × 2 sets", rest:"30s rest", note:"One arm extended" },
+            { name:"Pike Push-ups (feet elevated)", reps:"12 reps × 3 sets", rest:"20s rest", note:"Feet on chair" },
+            { name:"Diamond Push-ups", reps:"12 reps × 3 sets", rest:"20s rest", note:"To failure on last set" },
+          ]
+        }
+      ]
+    },
+    {
+      name: "Afternoon — Core",
+      icon: "🔥",
+      phases: [
+        {
+          exercises: [
+            { name:"Plank", reps:"30 seconds × 3", rest:"20s rest", note:"Squeeze everything tight" },
+            { name:"Dead Bugs", reps:"10 each side × 2 sets", rest:"20s rest", note:"Lower back pressed to floor" },
+            { name:"Mountain Climbers", reps:"20 total × 2 sets", rest:"20s rest", note:"Controlled pace" },
+            { name:"Bicycle Crunches", reps:"15 each side × 2 sets", rest:"20s rest", note:"Elbow to opposite knee" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Plank", reps:"45 seconds × 3", rest:"15s rest", note:"Add shoulder taps" },
+            { name:"Leg Raises", reps:"12 reps × 3 sets", rest:"20s rest", note:"Lying down, legs straight" },
+            { name:"Mountain Climbers", reps:"30 total × 3 sets", rest:"15s rest", note:"Faster pace" },
+            { name:"Flutter Kicks", reps:"20 each × 2 sets", rest:"15s rest", note:"Lower back stays down" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Plank", reps:"60 seconds × 3", rest:"15s rest", note:"Plank to push-up transitions" },
+            { name:"Leg Raises", reps:"15 reps × 3 sets", rest:"15s rest", note:"Add hip lift at top" },
+            { name:"Mountain Climbers", reps:"40 total × 3 sets", rest:"15s rest", note:"Sprint pace" },
+            { name:"V-ups", reps:"10 reps × 3 sets", rest:"20s rest", note:"Touch toes at the top" },
+          ]
+        }
+      ]
+    },
+    {
+      name: "Evening — Full Body Cardio",
+      icon: "⚡",
+      phases: [
+        {
+          exercises: [
+            { name:"Jumping Jacks", reps:"30 reps × 2 sets", rest:"20s rest", note:"Or step jacks if needed" },
+            { name:"Squat to Push-up (Burpee mod)", reps:"8 reps × 2 sets", rest:"30s rest", note:"No jump, step back" },
+            { name:"High Knees (in place)", reps:"20 seconds × 3", rest:"20s rest", note:"Drive knees up" },
+            { name:"Superman Holds", reps:"15 seconds × 4", rest:"15s rest", note:"Face down, lift everything" },
+            { name:"Towel Rows", reps:"10 reps × 2 sets", rest:"20s rest", note:"Towel over door, lean back & pull" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Jumping Jacks", reps:"40 reps × 2 sets", rest:"15s rest", note:"Fast pace" },
+            { name:"Burpees (full)", reps:"8 reps × 3 sets", rest:"30s rest", note:"Add the jump" },
+            { name:"High Knees", reps:"30 seconds × 3", rest:"15s rest", note:"Sprint intensity" },
+            { name:"Superman Pulls", reps:"12 reps × 3 sets", rest:"15s rest", note:"Squeeze shoulder blades" },
+            { name:"Towel Rows", reps:"12 reps × 3 sets", rest:"20s rest", note:"Slow and controlled" },
+          ]
+        },
+        {
+          exercises: [
+            { name:"Jumping Jacks", reps:"50 reps × 2 sets", rest:"10s rest", note:"Non-stop" },
+            { name:"Burpees", reps:"10 reps × 3 sets", rest:"25s rest", note:"Max speed" },
+            { name:"High Knees", reps:"40 seconds × 3", rest:"10s rest", note:"All out" },
+            { name:"Superman Pulls", reps:"15 reps × 3 sets", rest:"10s rest", note:"Pause at top" },
+            { name:"Towel Rows", reps:"15 reps × 3 sets", rest:"15s rest", note:"Add pause at chest" },
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+// ============ STATE ============
+let state = {};
+const LS_KEY = '30day_shred';
+
+function defaultState() {
+  return {
+    setup: false,
+    startDate: null,
+    startWeight: 92.5,
+    wakeTime: "07:00",
+    sleepTime: "23:00",
+    eatStart: "12:00",
+    fastStartedAt: null,
+    days: {} // keyed by day number: { weight, water, steps, sessions:[bool], fastDone }
+  };
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem(LS_KEY);
+    if (s) { state = JSON.parse(s); return; }
+  } catch(e) {}
+  state = defaultState();
+}
+
+function saveState() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function getCurrentDay() {
+  if (!state.startDate) return 1;
+  const start = new Date(state.startDate);
+  const now = new Date();
+  start.setHours(0,0,0,0);
+  now.setHours(0,0,0,0);
+  const diff = Math.floor((now - start) / 86400000) + 1;
+  return Math.max(1, Math.min(30, diff));
+}
+
+function getPhase() {
+  const day = getCurrentDay();
+  if (day <= 10) return 0;
+  if (day <= 20) return 1;
+  return 2;
+}
+
+function getDayData(day) {
+  if (!state.days[day]) {
+    state.days[day] = { weight:null, water:0, steps:0, sessions:[false,false,false,false], fastDone:false };
+  }
+  return state.days[day];
+}
+
+// ============ SETUP ============
+function startJourney() {
+  const weight = parseFloat(document.getElementById('setupWeight').value);
+  const date = document.getElementById('setupDate').value;
+  const wake = document.getElementById('setupWake').value;
+  const sleep = document.getElementById('setupSleep').value;
+  const eatStart = document.getElementById('setupEatStart').value;
+
+  if (!date) { alert('Please set a start date'); return; }
+  if (!weight || weight < 30) { alert('Please enter a valid weight'); return; }
+
+  state.setup = true;
+  state.startDate = date;
+  state.startWeight = weight;
+  state.wakeTime = wake || "07:00";
+  state.sleepTime = sleep || "23:00";
+  state.eatStart = eatStart || "12:00";
+
+  // Log starting weight for day 1
+  getDayData(1).weight = weight;
+
+  saveState();
+  requestNotifPermission();
+  initApp();
+}
+
+// ============ INIT ============
+function initApp() {
+  document.getElementById('setupScreen').classList.remove('active');
+  document.getElementById('todayScreen').classList.add('active');
+  document.querySelector('.nav').style.display = 'flex';
+
+  updateToday();
+  updateSettings();
+  renderPlan();
+  startTimers();
+  registerServiceWorker();
+  requestWakeLock();
+
+  // Pre-schedule notifications via SW every 30 min
+  setInterval(preScheduleNotifications, 1800000);
+  setTimeout(preScheduleNotifications, 3000); // after SW registers
+}
+
+// ============ NAVIGATION ============
+function showScreen(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  if (id === 'progressScreen') updateProgress();
+  if (id === 'todayScreen') updateToday();
+}
+
+// ============ TODAY SCREEN ============
+function updateToday() {
+  const day = getCurrentDay();
+  const data = getDayData(day);
+
+  document.getElementById('headerDay').textContent = `Day ${day}/30`;
+  document.getElementById('headerDay2').textContent = `Day ${day}/30`;
+  document.getElementById('dayNum').textContent = day;
+
+  // Ring
+  const progress = day / 30;
+  const circumference = 2 * Math.PI * 62;
+  document.getElementById('dayRingCircle').style.strokeDashoffset = circumference * (1 - progress);
+
+  // Weight
+  if (data.weight) document.getElementById('weightInput').value = data.weight;
+
+  // Water
+  updateWaterUI(data);
+
+  // Steps
+  if (data.steps) document.getElementById('stepsInput').value = data.steps;
+
+  // Sessions
+  renderSessions(day, data);
+
+  // Fasting
+  updateFastUI();
+}
+
+function renderSessions(day, data) {
+  const phase = getPhase();
+  const list = document.getElementById('sessionList');
+  const sessions = WORKOUT_PLAN.sessions;
+
+  // Compute session times
+  const times = getSessionTimes();
+  let doneCount = 0;
+
+  list.innerHTML = sessions.map((s, i) => {
+    const done = data.sessions[i];
+    if (done) doneCount++;
+    return `
+      <div class="session-item ${done?'done':''}" onclick="openSession(${i})">
+        <div class="session-check">${done?'':'  '}</div>
+        <div class="session-info">
+          <div class="session-name">${s.icon} ${s.name}</div>
+          <div class="session-time">${times[i]} · 10 min · Phase ${phase+1}</div>
+        </div>
+        <button class="session-expand-btn">View</button>
+      </div>`;
+  }).join('');
+
+  document.getElementById('sessionCount').textContent = `${doneCount}/4`;
+}
+
+function getSessionTimes() {
+  const wake = parseTime(state.wakeTime);
+  const sleep = parseTime(state.sleepTime);
+  const awakeMinutes = ((sleep - wake) + 1440) % 1440 || 960; // default 16 hrs
+  const gap = Math.floor(awakeMinutes / 5);
+
+  return [
+    formatTime(wake + gap),
+    formatTime(wake + gap * 2),
+    formatTime(wake + gap * 3),
+    formatTime(wake + gap * 4)
+  ];
+}
+
+function parseTime(t) {
+  const [h,m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function formatTime(mins) {
+  mins = ((mins % 1440) + 1440) % 1440;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ============ SESSION MODAL ============
+let currentSessionIndex = -1;
+
+function openSession(idx) {
+  currentSessionIndex = idx;
+  const phase = getPhase();
+  const session = WORKOUT_PLAN.sessions[idx];
+  const exercises = session.phases[phase].exercises;
+  const day = getCurrentDay();
+  const data = getDayData(day);
+
+  document.getElementById('modalTitle').textContent = `${session.icon} ${session.name}`;
+  document.getElementById('modalSubtitle').textContent = `Phase ${phase+1} · 10 minutes`;
+
+  document.getElementById('modalExercises').innerHTML = exercises.map(e => `
+    <div class="exercise-item">
+      <div class="exercise-name">${e.name}</div>
+      <div class="exercise-detail">${e.reps}${e.rest ? ' · ' + e.rest : ''}</div>
+      ${e.note ? `<div class="exercise-note">${e.note}</div>` : ''}
+    </div>
+  `).join('');
+
+  const btn = document.getElementById('modalCompleteBtn');
+  if (data.sessions[idx]) {
+    btn.textContent = 'Completed ✓';
+    btn.style.opacity = '0.5';
+  } else {
+    btn.textContent = 'Mark Complete ✓';
+    btn.style.opacity = '1';
+  }
+
+  document.getElementById('sessionModal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('sessionModal')) {
+    document.getElementById('sessionModal').classList.remove('open');
+  }
+}
+
+function completeSession() {
+  const day = getCurrentDay();
+  const data = getDayData(day);
+  data.sessions[currentSessionIndex] = !data.sessions[currentSessionIndex];
+  saveState();
+  document.getElementById('sessionModal').classList.remove('open');
+  updateToday();
+}
+
+// ============ WEIGHT ============
+function saveWeight() {
+  const v = parseFloat(document.getElementById('weightInput').value);
+  if (!v || v < 30) return;
+  const day = getCurrentDay();
+  getDayData(day).weight = v;
+  saveState();
+  showNotif('Weight logged: ' + v + ' kg');
+}
+
+// ============ WATER ============
+function addWater(amount) {
+  const day = getCurrentDay();
+  const data = getDayData(day);
+  data.water = Math.max(0, Math.round((data.water + amount) * 100) / 100);
+  saveState();
+  updateWaterUI(data);
+}
+
+function updateWaterUI(data) {
+  const pct = Math.min(100, (data.water / 2.5) * 100);
+  document.getElementById('waterFill').style.width = pct + '%';
+  document.getElementById('waterPercent').textContent = Math.round(pct) + '%';
+  document.getElementById('waterAmount').textContent = `${data.water.toFixed(1)} / 2.5L`;
+}
+
+// ============ STEPS ============
+function saveSteps() {
+  const v = parseInt(document.getElementById('stepsInput').value);
+  if (isNaN(v)) return;
+  const day = getCurrentDay();
+  getDayData(day).steps = v;
+  saveState();
+  showNotif('Steps logged: ' + v.toLocaleString());
+}
+
+// ============ FASTING ============
+function toggleFast() {
+  if (state.fastStartedAt) {
+    // Stop fasting
+    const elapsed = Date.now() - state.fastStartedAt;
+    const hours = elapsed / 3600000;
+    if (hours >= 16) {
+      getDayData(getCurrentDay()).fastDone = true;
+    }
+    state.fastStartedAt = null;
+  } else {
+    state.fastStartedAt = Date.now();
+  }
+  saveState();
+  updateFastUI();
+}
+
+function updateFastUI() {
+  const btn = document.getElementById('fastBtn');
+  const dot = document.getElementById('fastDot');
+  const timer = document.getElementById('fastTimer');
+  const label = document.getElementById('fastLabel');
+
+  if (state.fastStartedAt) {
+    dot.classList.add('active');
+    btn.textContent = 'Stop';
+    btn.classList.add('stop');
+    const elapsed = Date.now() - state.fastStartedAt;
+    const totalSec = Math.floor(elapsed / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    timer.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    label.textContent = h >= 16 ? '16h reached! ✓' : `${16 - h}h ${60 - m}m remaining`;
+  } else {
+    dot.classList.remove('active');
+    btn.textContent = 'Start';
+    btn.classList.remove('stop');
+    timer.textContent = getDayData(getCurrentDay()).fastDone ? '16:00:00' : '00:00:00';
+    label.textContent = getDayData(getCurrentDay()).fastDone ? 'Completed today ✓' : 'Not fasting';
+  }
+}
+
+// ============ TIMERS & NOTIFICATIONS ============
+// Notification log (stored in state)
+function getNotifLog() {
+  if (!state.notifLog) state.notifLog = [];
+  return state.notifLog;
+}
+
+function addNotifLog(title, body, type) {
+  const log = getNotifLog();
+  log.unshift({ title, body, type, time: Date.now() });
+  if (log.length > 50) log.length = 50; // keep last 50
+  saveState();
+  renderNotifLog();
+}
+
+// Dedup: track which notifications fired this minute
+let firedThisMinute = {};
+
+function startTimers() {
+  // Fast timer - every second
+  setInterval(() => {
+    if (state.fastStartedAt) updateFastUI();
+  }, 1000);
+
+  // Notification check - every 30 seconds for reliability
+  scheduleReminders();
+  setInterval(scheduleReminders, 30000);
+
+  // Visibility change - re-check when app comes back to foreground
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      updateToday();
+      scheduleReminders();
+    }
+  });
+}
+
+function requestNotifPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      document.getElementById('setNotif').textContent = p === 'granted' ? 'Enabled ✓' : 'Denied';
+    });
+  } else {
+    document.getElementById('setNotif').textContent = 'Not supported';
+  }
+}
+
+function showNotif(msg, type) {
+  const banner = document.getElementById('notifBanner');
+  banner.textContent = msg;
+
+  // Color by type
+  const colors = {
+    session: 'var(--accent)',
+    water: 'var(--blue)',
+    fast: 'var(--orange)',
+    milestone: 'var(--purple)',
+    weight: 'var(--accent)',
+    steps: 'var(--accent)',
+    warning: 'var(--red)',
+    info: 'var(--accent)'
+  };
+  banner.style.background = colors[type] || 'var(--accent)';
+  banner.classList.add('show');
+  setTimeout(() => banner.classList.remove('show'), 3500);
+}
+
+function playNotifSound(type) {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    if (type === 'session') {
+      // Upbeat double beep
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(1100, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+    } else if (type === 'water') {
+      // Soft drip sound
+      osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+    } else if (type === 'milestone') {
+      // Victory fanfare
+      osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.12);
+      osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.24);
+      osc.frequency.setValueAtTime(1047, audioCtx.currentTime + 0.36);
+      gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+    } else {
+      // Generic ping
+      osc.frequency.setValueAtTime(700, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+    }
+  } catch(e) {}
+}
+
+function vibrateDevice(pattern) {
+  if ('vibrate' in navigator) {
+    navigator.vibrate(pattern || [100, 50, 100]);
+  }
+}
+
+function sendNotification(title, body, type='info') {
+  // Dedup key: prevent same notification within same minute
+  const key = title + body + Math.floor(Date.now() / 60000);
+  if (firedThisMinute[key]) return;
+  firedThisMinute[key] = true;
+  // Clean old keys every 2 min
+  setTimeout(() => { delete firedThisMinute[key]; }, 120000);
+
+  // System notification
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      const n = new Notification(title, {
+        body,
+        tag: type + '-' + Math.floor(Date.now() / 60000), // prevents stacking
+        renotify: true,
+        requireInteraction: type === 'session', // session notifications stay until tapped
+        silent: false
+      });
+      // Auto close after 10s
+      setTimeout(() => n.close(), 10000);
+    } catch(e) {}
+  }
+
+  // In-app banner
+  showNotif(`${title}: ${body}`, type);
+
+  // Sound
+  playNotifSound(type);
+
+  // Vibration
+  if (type === 'session') {
+    vibrateDevice([200, 100, 200, 100, 200]);
+  } else if (type === 'milestone') {
+    vibrateDevice([100, 50, 100, 50, 100, 50, 300]);
+  } else {
+    vibrateDevice([100, 50, 100]);
+  }
+
+  // Log
+  addNotifLog(title, body, type);
+}
+
+function scheduleReminders() {
+  const now = new Date();
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+  const day = getCurrentDay();
+  if (day > 30) return;
+  const data = getDayData(day);
+
+  const wake = parseTime(state.wakeTime);
+  const sleep = parseTime(state.sleepTime);
+  const awakeMinutes = ((sleep - wake) + 1440) % 1440 || 960;
+  const gap = Math.floor(awakeMinutes / 5);
+  const sessionMins = [wake + gap, wake + gap * 2, wake + gap * 3, wake + gap * 4];
+
+  // ---- SESSION REMINDERS ----
+  sessionMins.forEach((t, i) => {
+    const targetMin = ((t % 1440) + 1440) % 1440;
+
+    // 5 minute warning
+    if (currentMins === ((targetMin - 5 + 1440) % 1440) && !data.sessions[i]) {
+      sendNotification('⏰ 5 Min Warning', `${WORKOUT_PLAN.sessions[i].name} starting in 5 minutes`, 'session');
+    }
+
+    // Session time
+    if (currentMins === targetMin && !data.sessions[i]) {
+      sendNotification('🏋️ Session Time!', `${WORKOUT_PLAN.sessions[i].name} — 10 min workout. Let\'s go!`, 'session');
+    }
+
+    // Missed session nudge (15 min after)
+    if (currentMins === ((targetMin + 15) % 1440) && !data.sessions[i]) {
+      sendNotification('👀 Missed Session?', `${WORKOUT_PLAN.sessions[i].name} was 15 min ago. Still time to crush it!`, 'warning');
+    }
+  });
+
+  // ---- WATER REMINDERS ----
+  const awakeHours = awakeMinutes / 60;
+  const waterPerHour = 2.5 / awakeHours;
+  const hoursAwake = ((currentMins - wake + 1440) % 1440) / 60;
+  const expectedWater = waterPerHour * hoursAwake;
+
+  // Smart water: check every 45 min if behind
+  if (currentMins % 45 === 0 && hoursAwake > 0.5) {
+    if (data.water < expectedWater - 0.2 && data.water < 2.5) {
+      const remaining = (2.5 - data.water).toFixed(1);
+      const urgency = (data.water < expectedWater - 0.5) ? '⚠️' : '💧';
+      const msg = data.water === 0
+        ? `You haven\'t logged any water today! ${remaining}L to go.`
+        : `${remaining}L remaining. You\'re a bit behind pace.`;
+      sendNotification(`${urgency} Drink Water`, msg, 'water');
+    }
+  }
+
+  // Water goal reached celebration
+  if (data.water >= 2.5 && !state._waterGoalCelebrated) {
+    sendNotification('🎉 Water Goal Hit!', '2.5L done! Great hydration today.', 'milestone');
+    state._waterGoalCelebrated = day;
+    saveState();
+  }
+  if (state._waterGoalCelebrated !== day) state._waterGoalCelebrated = null;
+
+  // ---- FASTING REMINDERS ----
+  const eatStartMins = parseTime(state.eatStart);
+  const eatEndMins = (eatStartMins + 480) % 1440;
+
+  // 30 min warning before window closes
+  if (currentMins === ((eatEndMins - 30 + 1440) % 1440)) {
+    sendNotification('⏳ 30 Min Left', 'Your eating window closes in 30 minutes', 'fast');
+  }
+
+  // Window closed
+  if (currentMins === eatEndMins) {
+    sendNotification('🕐 Eating Window Closed', 'Fasting begins. You got this! 16 hours to go.', 'fast');
+  }
+
+  // Window opens
+  if (currentMins === eatStartMins) {
+    sendNotification('🍽️ Eating Window Open', 'You can eat for the next 8 hours. Make it count!', 'fast');
+  }
+
+  // Fasting milestones (if actively fasting)
+  if (state.fastStartedAt) {
+    const fastHours = (Date.now() - state.fastStartedAt) / 3600000;
+    const fastMins = Math.floor(fastHours * 60);
+
+    if (fastMins === 480) { // 8 hours
+      sendNotification('🔥 8 Hours Fasted', 'Halfway through your regular fast. Fat burning is ramping up!', 'fast');
+    }
+    if (fastMins === 720) { // 12 hours
+      sendNotification('🔥 12 Hours Fasted', 'You\'re in fat-burning mode. Keep going!', 'fast');
+    }
+    if (fastMins === 900) { // 15 hours
+      sendNotification('🔥 15 Hours!', 'Almost there — just 1 more hour!', 'fast');
+    }
+    if (fastMins === 960) { // 16 hours
+      sendNotification('🏆 16 Hours Complete!', 'You\'ve hit your fasting goal! Incredible discipline.', 'milestone');
+    }
+  }
+
+  // ---- MILESTONE NOTIFICATIONS ----
+  // All sessions done today
+  const sessionsDone = data.sessions.filter(Boolean).length;
+  if (sessionsDone === 4 && !data._allSessionsCelebrated) {
+    sendNotification('💪 All Sessions Done!', '4/4 sessions today! Beast mode activated.', 'milestone');
+    data._allSessionsCelebrated = true;
+    saveState();
+  }
+
+  // Streak milestones
+  let streak = 0;
+  for (let d = day; d >= 1; d--) {
+    const dd = state.days[d];
+    if (dd && dd.sessions.filter(Boolean).length >= 3) streak++;
+    else break;
+  }
+  if (streak === 3 && !state._streak3) {
+    sendNotification('🔥 3 Day Streak!', 'You\'re building a habit. Don\'t stop!', 'milestone');
+    state._streak3 = true; saveState();
+  }
+  if (streak === 7 && !state._streak7) {
+    sendNotification('🔥 7 Day Streak!', 'One full week! You\'re unstoppable.', 'milestone');
+    state._streak7 = true; saveState();
+  }
+  if (streak === 14 && !state._streak14) {
+    sendNotification('🔥 14 Day Streak!', 'Halfway through! This is becoming who you are.', 'milestone');
+    state._streak14 = true; saveState();
+  }
+  if (streak === 21 && !state._streak21) {
+    sendNotification('🔥 21 Day Streak!', 'They say it takes 21 days to build a habit. You did it.', 'milestone');
+    state._streak21 = true; saveState();
+  }
+  if (streak === 30 && !state._streak30) {
+    sendNotification('🏆 30 DAYS COMPLETE!', 'YOU DID IT! 30 days of pure dedication. Incredible.', 'milestone');
+    state._streak30 = true; saveState();
+  }
+
+  // Weight milestones
+  let currentWeight = state.startWeight;
+  for (let d = day; d >= 1; d--) {
+    if (state.days[d] && state.days[d].weight) { currentWeight = state.days[d].weight; break; }
+  }
+  const kgLost = state.startWeight - currentWeight;
+  if (kgLost >= 1 && !state._lost1) {
+    sendNotification('⚖️ 1kg Lost!', 'First kilo down! Proof that it\'s working.', 'milestone');
+    state._lost1 = true; saveState();
+  }
+  if (kgLost >= 2 && !state._lost2) {
+    sendNotification('⚖️ 2kg Lost!', 'Two kilos gone. Real, measurable progress.', 'milestone');
+    state._lost2 = true; saveState();
+  }
+  if (kgLost >= 3 && !state._lost3) {
+    sendNotification('⚖️ 3kg Lost!', 'Three kilos! Your clothes might start fitting differently.', 'milestone');
+    state._lost3 = true; saveState();
+  }
+  if (kgLost >= 4 && !state._lost4) {
+    sendNotification('⚖️ 4kg Lost!', 'Four kilos down. People will start noticing.', 'milestone');
+    state._lost4 = true; saveState();
+  }
+
+  // ---- END OF DAY REMINDER ----
+  // 1 hour before sleep: log reminder if stuff is missing
+  const sleepWarnMin = ((sleep - 60 + 1440) % 1440);
+  if (currentMins === sleepWarnMin) {
+    const missing = [];
+    if (!data.weight) missing.push('weight');
+    if (data.steps === 0) missing.push('steps');
+    if (data.water < 1) missing.push('water');
+    if (sessionsDone < 4) missing.push(`${4 - sessionsDone} session(s)`);
+
+    if (missing.length > 0) {
+      sendNotification('📝 Don\'t Forget to Log', `Still missing: ${missing.join(', ')}. Open the app and log before bed!`, 'warning');
+    }
+  }
+
+  // ---- PHASE CHANGE NOTIFICATION ----
+  if (day === 11 && !state._phase2) {
+    sendNotification('⚡ Phase 2 Unlocked!', 'Workouts just levelled up. You\'re ready for this.', 'milestone');
+    state._phase2 = true; saveState();
+  }
+  if (day === 21 && !state._phase3) {
+    sendNotification('⚡ Phase 3 — The Final Push!', 'Peak phase. Last 10 days. Give everything.', 'milestone');
+    state._phase3 = true; saveState();
+  }
+}
+
+// Render notification log in settings
+function renderNotifLog() {
+  const container = document.getElementById('notifLogList');
+  if (!container) return;
+  const log = getNotifLog();
+  if (log.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text2);padding:12px;font-size:13px">No notifications yet</div>';
+    return;
+  }
+  container.innerHTML = log.slice(0, 20).map(n => {
+    const time = new Date(n.time);
+    const timeStr = time.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+    const dateStr = time.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    const typeColors = { session:'var(--accent)', water:'var(--blue)', fast:'var(--orange)', milestone:'var(--purple)', warning:'var(--red)', info:'var(--text2)' };
+    return `<div style="padding:10px;background:var(--bg);border-radius:8px;margin-bottom:4px;font-size:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-weight:600;color:${typeColors[n.type]||'var(--text)'}">${n.title}</span>
+        <span style="color:var(--text2);font-size:10px">${dateStr} ${timeStr}</span>
+      </div>
+      <div style="color:var(--text2);margin-top:2px">${n.body}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ SERVICE WORKER (inline) ============
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      self.addEventListener('install', e => self.skipWaiting());
+      self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+      
+      // Keep alive - periodic sync if available
+      self.addEventListener('periodicsync', e => {
+        if (e.tag === 'check-reminders') {
+          e.waitUntil(notifyClients());
+        }
+      });
+
+      async function notifyClients() {
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => client.postMessage({ type: 'CHECK_REMINDERS' }));
+      }
+
+      // Listen for messages from the app
+      self.addEventListener('message', e => {
+        if (e.data && e.data.type === 'SCHEDULE_NOTIF') {
+          const { title, body, delay, tag } = e.data;
+          setTimeout(() => {
+            self.registration.showNotification(title, {
+              body,
+              tag: tag || 'reminder',
+              renotify: true,
+              vibrate: [200, 100, 200],
+              requireInteraction: true
+            });
+          }, delay);
+        }
+      });
+
+      // Notification click -> open app
+      self.addEventListener('notificationclick', e => {
+        e.notification.close();
+        e.waitUntil(
+          self.clients.matchAll({ type: 'window' }).then(clients => {
+            if (clients.length > 0) {
+              clients[0].focus();
+            } else {
+              self.clients.openWindow('/');
+            }
+          })
+        );
+      });
+    `;
+
+    const blob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+
+    navigator.serviceWorker.register(swUrl, { scope: '/' }).then(reg => {
+      console.log('SW registered');
+
+      // Listen for SW messages
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data && e.data.type === 'CHECK_REMINDERS') {
+          scheduleReminders();
+        }
+      });
+
+      // Try to register periodic sync
+      if ('periodicSync' in reg) {
+        reg.periodicSync.register('check-reminders', {
+          minInterval: 60 * 1000 // 1 minute
+        }).catch(() => console.log('Periodic sync not available'));
+      }
+    }).catch(err => {
+      console.log('SW registration failed (expected for local files):', err.message);
+    });
+  }
+}
+
+// Schedule upcoming notifications via SW for background delivery
+function scheduleViaSW(title, body, delayMs, tag) {
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SCHEDULE_NOTIF',
+      title, body, delay: delayMs, tag
+    });
+  }
+}
+
+// Pre-schedule the next hour of notifications via SW
+function preScheduleNotifications() {
+  if (!navigator.serviceWorker || !navigator.serviceWorker.controller) return;
+
+  const now = new Date();
+  const currentMins = now.getHours() * 60 + now.getMinutes();
+  const currentSec = now.getSeconds();
+  const day = getCurrentDay();
+  const data = getDayData(day);
+
+  const wake = parseTime(state.wakeTime);
+  const sleep = parseTime(state.sleepTime);
+  const awakeMinutes = ((sleep - wake) + 1440) % 1440 || 960;
+  const gap = Math.floor(awakeMinutes / 5);
+  const sessionMins = [wake + gap, wake + gap * 2, wake + gap * 3, wake + gap * 4];
+
+  sessionMins.forEach((t, i) => {
+    const targetMin = ((t % 1440) + 1440) % 1440;
+    const diffMin = ((targetMin - currentMins + 1440) % 1440);
+    if (diffMin > 0 && diffMin <= 60 && !data.sessions[i]) {
+      const delayMs = (diffMin * 60 - currentSec) * 1000;
+      scheduleViaSW(
+        '🏋️ Session Time!',
+        `${WORKOUT_PLAN.sessions[i].name} — 10 min workout`,
+        delayMs,
+        'session-' + i
+      );
+    }
+  });
+}
+
+// Wake lock - prevent device from sleeping while app is visible
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      let wakeLock = await navigator.wakeLock.request('screen');
+      document.addEventListener('visibilitychange', async () => {
+        if (document.visibilityState === 'visible') {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      });
+    } catch(e) {}
+  }
+}
+
+// ============ PROGRESS ============
+function updateProgress() {
+  const day = getCurrentDay();
+  const data = getDayData(day);
+
+  // Weight lost
+  let currentWeight = state.startWeight;
+  for (let d = day; d >= 1; d--) {
+    if (state.days[d] && state.days[d].weight) { currentWeight = state.days[d].weight; break; }
+  }
+  const lost = Math.max(0, state.startWeight - currentWeight);
+  document.getElementById('statLost').textContent = lost.toFixed(1);
+
+  // Streak
+  let streak = 0;
+  for (let d = day; d >= 1; d--) {
+    const dd = state.days[d];
+    if (dd && dd.sessions.filter(Boolean).length >= 3) streak++;
+    else break;
+  }
+  document.getElementById('statStreak').textContent = streak;
+
+  // Total sessions
+  let totalSessions = 0;
+  let totalWater = 0;
+  for (let d = 1; d <= 30; d++) {
+    if (state.days[d]) {
+      totalSessions += state.days[d].sessions.filter(Boolean).length;
+      totalWater += state.days[d].water || 0;
+    }
+  }
+  document.getElementById('statSessions').textContent = totalSessions;
+  document.getElementById('statWater').textContent = totalWater.toFixed(1);
+
+  // Weight chart
+  drawWeightChart();
+  drawCompletionChart();
+  renderHistory();
+}
+
+function drawWeightChart() {
+  const canvas = document.getElementById('weightChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = 400;
+  ctx.scale(2,2);
+
+  const w = canvas.offsetWidth;
+  const h = 200;
+  const pad = { top:20, right:10, bottom:30, left:40 };
+
+  ctx.clearRect(0, 0, w, h);
+
+  // Collect data
+  const points = [];
+  for (let d = 1; d <= 30; d++) {
+    if (state.days[d] && state.days[d].weight) {
+      points.push({ day: d, weight: state.days[d].weight });
+    }
+  }
+
+  if (points.length < 1) {
+    ctx.fillStyle = '#888';
+    ctx.font = '13px Outfit';
+    ctx.textAlign = 'center';
+    ctx.fillText('Log your weight to see the chart', w/2, h/2);
+    return;
+  }
+
+  const weights = points.map(p => p.weight);
+  const minW = Math.min(...weights) - 1;
+  const maxW = Math.max(...weights) + 1;
+
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+
+  // Grid
+  ctx.strokeStyle = '#2a2a3a';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (chartH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+    const val = maxW - ((maxW - minW) / 4) * i;
+    ctx.fillStyle = '#888';
+    ctx.font = '10px Outfit';
+    ctx.textAlign = 'right';
+    ctx.fillText(val.toFixed(1), pad.left - 5, y + 3);
+  }
+
+  // X axis labels
+  ctx.fillStyle = '#888';
+  ctx.font = '10px Outfit';
+  ctx.textAlign = 'center';
+  [1,5,10,15,20,25,30].forEach(d => {
+    const x = pad.left + ((d - 1) / 29) * chartW;
+    ctx.fillText('D'+d, x, h - 5);
+  });
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#00e676';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+
+  points.forEach((p, i) => {
+    const x = pad.left + ((p.day - 1) / 29) * chartW;
+    const y = pad.top + (1 - (p.weight - minW) / (maxW - minW)) * chartH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Dots
+  points.forEach(p => {
+    const x = pad.left + ((p.day - 1) / 29) * chartW;
+    const y = pad.top + (1 - (p.weight - minW) / (maxW - minW)) * chartH;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#00e676';
+    ctx.fill();
+    ctx.strokeStyle = '#0a0a0f';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+function drawCompletionChart() {
+  const canvas = document.getElementById('completionChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * 2;
+  canvas.height = 400;
+  ctx.scale(2,2);
+
+  const w = canvas.offsetWidth;
+  const h = 200;
+  const pad = { top:20, right:10, bottom:30, left:40 };
+  const day = getCurrentDay();
+
+  ctx.clearRect(0, 0, w, h);
+
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+  const barW = Math.max(4, (chartW / 30) - 2);
+
+  for (let d = 1; d <= 30; d++) {
+    const dd = state.days[d];
+    let score = 0;
+    if (dd) {
+      score += dd.sessions.filter(Boolean).length * 15; // 60 max
+      score += dd.weight ? 10 : 0;
+      score += Math.min(25, (dd.water / 2.5) * 25);
+      score += (dd.steps >= 10000) ? 5 : (dd.steps > 0 ? 2 : 0);
+    }
+    score = Math.min(100, score);
+
+    const x = pad.left + ((d - 1) / 29) * chartW - barW / 2;
+    const barH = (score / 100) * chartH;
+    const y = pad.top + chartH - barH;
+
+    ctx.fillStyle = d <= day ? (score >= 80 ? '#00e676' : score >= 40 ? '#ffab40' : '#ff5252') : '#1a1a28';
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, 2);
+    ctx.fill();
+  }
+
+  // X labels
+  ctx.fillStyle = '#888';
+  ctx.font = '10px Outfit';
+  ctx.textAlign = 'center';
+  [1,5,10,15,20,25,30].forEach(d => {
+    const x = pad.left + ((d - 1) / 29) * chartW;
+    ctx.fillText(d, x, h - 5);
+  });
+
+  // Y label
+  ctx.textAlign = 'right';
+  ctx.fillText('100%', pad.left - 5, pad.top + 5);
+  ctx.fillText('0%', pad.left - 5, pad.top + chartH + 3);
+}
+
+function renderHistory() {
+  const log = document.getElementById('historyLog');
+  const day = getCurrentDay();
+  let html = '';
+
+  for (let d = day; d >= 1; d--) {
+    const dd = state.days[d];
+    if (!dd) continue;
+    const sessions = dd.sessions.filter(Boolean).length;
+    const date = new Date(state.startDate);
+    date.setDate(date.getDate() + d - 1);
+    const dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+
+    html += `<div class="history-item">
+      <span>Day ${d} · ${dateStr}</span>
+      <span>
+        ${dd.weight ? dd.weight+'kg' : '--'}
+        · ${sessions}/4
+        · ${dd.water.toFixed(1)}L
+        · ${dd.steps ? dd.steps.toLocaleString()+'👣' : '--'}
+      </span>
+    </div>`;
+  }
+
+  log.innerHTML = html || '<div style="text-align:center;color:var(--text2);padding:20px;">No data yet</div>';
+}
+
+// ============ PLAN ============
+function renderPlan() {
+  [0,1,2].forEach(phase => {
+    const containerId = `phase${phase+1}Exercises`;
+    const container = document.getElementById(containerId);
+    let html = '';
+
+    WORKOUT_PLAN.sessions.forEach(session => {
+      html += `<div style="font-size:14px;font-weight:600;margin:12px 0 6px;color:var(--text)">${session.icon} ${session.name}</div>`;
+      session.phases[phase].exercises.forEach(e => {
+        html += `<div class="plan-exercise"><strong>${e.name}</strong> — ${e.reps}${e.note ? ` <span style="color:var(--text2);font-size:11px">(${e.note})</span>` : ''}</div>`;
+      });
+    });
+
+    container.innerHTML = html;
+  });
+}
+
+// ============ SETTINGS ============
+function updateSettings() {
+  document.getElementById('setWake').textContent = state.wakeTime;
+  document.getElementById('setSleep').textContent = state.sleepTime;
+  const eatEnd = parseTime(state.eatStart) + 480;
+  document.getElementById('setEat').textContent = `${state.eatStart} – ${formatTime(eatEnd).replace(' ','').toLowerCase()}`;
+  document.getElementById('setStart').textContent = state.startDate;
+  document.getElementById('setStartWeight').textContent = state.startWeight + ' kg';
+  renderNotifLog();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = '30day_shred_data.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function resetAll() {
+  if (confirm('Are you sure? This will delete ALL your data.')) {
+    if (confirm('This cannot be undone. Really reset?')) {
+      localStorage.removeItem(LS_KEY);
+      location.reload();
+    }
+  }
+}
+
+// ============ BOOT ============
+loadState();
+
+if (state.setup) {
+  document.getElementById('setupScreen').classList.remove('active');
+  initApp();
+} else {
+  // Set default date to today
+  const today = new Date();
+  document.getElementById('setupDate').value = today.toISOString().split('T')[0];
+  document.querySelector('.nav').style.display = 'none';
+}
+</script>
+</body>
+</html>
